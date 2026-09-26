@@ -1,19 +1,20 @@
 import { useAuth } from "../context/AuthContext.jsx";
+import { MdLogout } from "react-icons/md";
 
-export default function Navbar({ title }) {
+export default function Navbar() {
   const { user, logout } = useAuth();
   return (
-    <header className="flex items-center justify-between border-b border-black/5 bg-white px-8 py-4">
-      <h1 className="text-xl font-semibold text-ink">{title}</h1>
-      <div className="flex items-center gap-4">
-        <span className="text-sm text-slate">{user?.name}</span>
-        <button
-          onClick={logout}
-          className="text-sm text-slate hover:text-signal transition-colors"
-        >
-          Log out
-        </button>
-      </div>
-    </header>
+    <div style={{
+      display: "flex", justifyContent: "space-between", alignItems: "center",
+      padding: "14px 20px", background: "#fff", boxShadow: "var(--shadow)"
+    }}>
+      <div style={{ fontWeight: 600 }}>Welcome{user?.name ? `, ${user.name}` : ""}</div>
+      <button onClick={logout} style={{
+        display: "flex", alignItems: "center", gap: 6,
+        background: "none", border: "none", cursor: "pointer", color: "var(--danger)"
+      }}>
+        <MdLogout /> Logout
+      </button>
+    </div>
   );
 }

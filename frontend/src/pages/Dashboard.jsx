@@ -1,62 +1,96 @@
-import { useEffect, useState } from "react";
-import Sidebar from "../components/Sidebar.jsx";
-import Navbar from "../components/Navbar.jsx";
-import KpiCard from "../components/KpiCard.jsx";
-import api from "../api/axios.js";
+import { MdInventory2, MdWarning, MdInput, MdOutput, MdSwapHoriz, MdLogout } from "react-icons/md";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
+
+const navLinks = [
+  { to: "/dashboard", label: "Dashboard" },
+  { to: "/products", label: "Products" },
+  { to: "/receipts", label: "Receipts" },
+  { to: "/deliveries", label: "Deliveries" },
+  { to: "/transfers", label: "Transfers" },
+  { to: "/adjustments", label: "Adjustments" },
+  { to: "/move-history", label: "Move History" },
+  { to: "/settings", label: "Settings" },
+  { to: "/profile", label: "Profile" },
+];
+
+const kpis = [
+  { icon: <MdInventory2 />, label: "Total Products in Stock", value: "1,240", color: "#4f46e5" },
+  { icon: <MdWarning />, label: "Low / Out of Stock", value: "8", color: "#f59e0b" },
+  { icon: <MdInput />, label: "Pending Receipts", value: "5", color: "#0ea5e9" },
+  { icon: <MdOutput />, label: "Pending Deliveries", value: "12", color: "#10b981" },
+  { icon: <MdSwapHoriz />, label: "Transfers Scheduled", value: "3", color: "#8b5cf6" },
+];
 
 export default function Dashboard() {
-  const [kpis, setKpis] = useState(null);
-  const [lowStock, setLowStock] = useState([]);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    api.get("/dashboard/kpis").then((res) => setKpis(res.data));
-    api.get("/dashboard/low-stock").then((res) => setLowStock(res.data));
-  }, []);
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   return (
-    <div className="flex">
-      <Sidebar />
-      <div className="flex-1">
-        <Navbar title="Dashboard" />
-        <main className="p-8 space-y-8">
-          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
-            <KpiCard label="Total products" value={kpis?.totalProducts ?? "–"} />
-            <KpiCard label="Low stock items" value={kpis?.lowStockItems ?? "–"} tone="alert" />
-            <KpiCard label="Out of stock" value={kpis?.outOfStockItems ?? "–"} tone="alert" />
-            <KpiCard label="Pending receipts" value={kpis?.pendingReceipts ?? "–"} />
-            <KpiCard label="Pending deliveries" value={kpis?.pendingDeliveries ?? "–"} />
-          </div>
+    <div style={{ fontFamily: "Inter, sans-serif", background: "#f4f6f9", minHeight: "100vh" }}>
+      {/* Top Navbar */}
+      <div style={{
+        display: "flex", justifyContent: "space-between", alignItems: "center",
+        background: "#1e293b", padding: "14px 24px", flexWrap: "wrap"
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "20px", flexWrap: "wrap" }}>
+          <span style={{ color: "#fff", fontWeight: 700, fontSize: 18, marginRight: 10 }}>StockSense</span>
+          {navLinks.map((l) => (
+            <Link key={l.to} to={l.to} style={{
+              color: "#cbd5e1", textDecoration: "none", fontSize: 14, fontWeight: 500
+            }}>
+              {l.label}
+            </Link>
+          ))}
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <span style={{ color: "#fff", fontSize: 14 }}>Welcome, {user?.name || "User"}</span>
+          <button onClick={handleLogout} style={{
+            display: "flex", alignItems: "center", gap: 6, background: "#ef4444",
+            color: "#fff", border: "none", borderRadius: 8, padding: "8px 14px",
+            cursor: "pointer", fontSize: 14
+          }}>
+            <MdLogout /> Logout
+          </button>
+        </div>
+      </div>
 
-          <div className="bg-white rounded-lg border border-black/5">
-            <div className="px-5 py-4 border-b border-black/5">
-              <p className="font-medium text-ink">Items needing reorder</p>
+      {/* Page content */}
+      <div style={{ padding: "28px" }}>
+        <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 20, color: "#1e293b" }}>
+          Inventory Dashboard
+        </h1>
+
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+          gap: 16
+        }}>
+          {kpis.map((k) => (
+            <div key={k.label} style={{
+              display: "flex", alignItems: "center", gap: 14,
+              background: "#fff", borderRadius: 12,
+              boxShadow: "0 2px 8px rgba(0,0,0,0.06)", padding: 18
+            }}>
+              <div style={{
+                width: 46, height: 46, display: "flex", alignItems: "center",
+                justifyContent: "center", borderRadius: 10,
+                background: `${k.color}1A`, color: k.color, fontSize: 22
+              }}>
+                {k.icon}
+              </div>
+              <div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: "#1e293b" }}>{k.value}</div>
+                <div style={{ fontSize: 13, color: "#64748b" }}>{k.label}</div>
+              </div>
             </div>
-            {lowStock.length === 0 ? (
-              <p className="px-5 py-6 text-sm text-slate">Nothing below its reorder point right now.</p>
-            ) : (
-              <table className="w-full text-sm">
-                <thead className="text-left text-slate/70 border-b border-black/5">
-                  <tr>
-                    <th className="px-5 py-2 font-medium">Product</th>
-                    <th className="px-5 py-2 font-medium">SKU</th>
-                    <th className="px-5 py-2 font-medium">Quantity</th>
-                    <th className="px-5 py-2 font-medium">Reorder point</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {lowStock.map((row) => (
-                    <tr key={row.product._id} className="border-b border-black/5 last:border-0">
-                      <td className="px-5 py-2">{row.product.name}</td>
-                      <td className="px-5 py-2 text-slate">{row.product.sku}</td>
-                      <td className="px-5 py-2 text-signal font-medium">{row.quantity}</td>
-                      <td className="px-5 py-2 text-slate">{row.product.reorderMin}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
-        </main>
+          ))}
+        </div>
       </div>
     </div>
   );
