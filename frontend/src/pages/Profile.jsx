@@ -1,22 +1,16 @@
-import Sidebar from "../components/Sidebar.jsx";
-import Navbar from "../components/Navbar.jsx";
+import Layout from "../components/Layout.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Profile() {
   const { user } = useAuth();
+
   return (
-    <div className="flex">
-      <Sidebar />
-      <div className="flex-1">
-        <Navbar title="My profile" />
-        <main className="p-8">
-          <div className="bg-white rounded-lg border border-black/5 p-6 max-w-md space-y-3">
-            <p><span className="text-slate">Name:</span> {user?.name}</p>
-            <p><span className="text-slate">Email:</span> {user?.email}</p>
-            <p><span className="text-slate">Role:</span> {user?.role}</p>
-          </div>
-        </main>
+    <Layout title="My Profile">
+      <div style={{ background: "#fff", borderRadius: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.06)", padding: 24, maxWidth: 400 }}>
+        <p style={{ marginBottom: 10 }}><strong>Name:</strong> {user?.name || "—"}</p>
+        <p style={{ marginBottom: 10 }}><strong>Email:</strong> {user?.email || "—"}</p>
+        <p><strong>Role:</strong> Inventory Manager</p>
       </div>
-    </div>
+    </Layout>
   );
 }
