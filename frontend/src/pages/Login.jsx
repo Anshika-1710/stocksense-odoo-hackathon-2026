@@ -1,69 +1,67 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ email: "", password: "" });
-  const [error, setError] = useState("");
-  const [busy, setBusy] = useState(false);
 
-  const submit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setError("");
-    setBusy(true);
-    try {
-      await login(form.email, form.password);
-      navigate("/");
-    } catch (err) {
-      setError(err.response?.data?.message || "Could not log in");
-    } finally {
-      setBusy(false);
-    }
+    login({ name: email.split("@")[0], email }, "dummy-token");
+    navigate("/dashboard");
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-sage px-4">
-      <div className="w-full max-w-sm bg-white rounded-lg border border-black/5 p-8">
-        <p className="text-lg font-semibold text-ink">StockSense</p>
-        <p className="text-sm text-slate mt-1 mb-6">Log in to your inventory dashboard</p>
+    <div style={{
+      display: "flex", justifyContent: "center", alignItems: "center",
+      height: "100vh", background: "#f4f6f9", fontFamily: "Inter, sans-serif"
+    }}>
+      <form onSubmit={handleSubmit} style={{
+        width: 360, background: "#fff", borderRadius: 14,
+        boxShadow: "0 4px 16px rgba(0,0,0,0.08)", padding: 32
+      }}>
+        <h1 style={{ fontSize: 22, fontWeight: 700, color: "#1e293b", marginBottom: 4 }}>
+          StockSense
+        </h1>
+        <p style={{ fontSize: 14, color: "#64748b", marginBottom: 24 }}>
+          Log in to your inventory dashboard
+        </p>
 
-        <form onSubmit={submit} className="space-y-4">
-          <div>
-            <label className="text-sm text-slate">Email</label>
-            <input
-              type="email"
-              required
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              className="mt-1 w-full rounded-md border border-black/10 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-moss"
-            />
-          </div>
-          <div>
-            <label className="text-sm text-slate">Password</label>
-            <input
-              type="password"
-              required
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-              className="mt-1 w-full rounded-md border border-black/10 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-moss"
-            />
-          </div>
-          {error && <p className="text-sm text-signal">{error}</p>}
-          <button
-            disabled={busy}
-            className="w-full rounded-md bg-ink text-white py-2 text-sm font-medium hover:bg-slate transition-colors disabled:opacity-60"
-          >
-            {busy ? "Logging in..." : "Log in"}
-          </button>
-        </form>
+        <label style={{ fontSize: 13, fontWeight: 500, color: "#334155" }}>Email</label>
+        <input
+          type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+          required
+          style={{
+            width: "100%", padding: 10, marginTop: 6, marginBottom: 16,
+            border: "1px solid #d1d5db", borderRadius: 8, fontSize: 14
+          }}
+        />
 
-        <div className="mt-4 flex justify-between text-sm">
-          <Link to="/signup" className="text-moss hover:underline">Create account</Link>
-          <Link to="/forgot-password" className="text-slate hover:underline">Forgot password?</Link>
+        <label style={{ fontSize: 13, fontWeight: 500, color: "#334155" }}>Password</label>
+        <input
+          type="password" value={password} onChange={(e) => setPassword(e.target.value)}
+          required
+          style={{
+            width: "100%", padding: 10, marginTop: 6, marginBottom: 20,
+            border: "1px solid #d1d5db", borderRadius: 8, fontSize: 14
+          }}
+        />
+
+        <button type="submit" style={{
+          width: "100%", padding: 12, background: "#4f46e5", color: "#fff",
+          border: "none", borderRadius: 8, fontWeight: 600, fontSize: 14, cursor: "pointer"
+        }}>
+          Log in
+        </button>
+
+        <div style={{ display: "flex", justifyContent: "space-between", marginTop: 16, fontSize: 13 }}>
+          <Link to="/signup" style={{ color: "#4f46e5", textDecoration: "none" }}>Create account</Link>
+          <Link to="/forgot-password" style={{ color: "#4f46e5", textDecoration: "none" }}>Forgot password?</Link>
         </div>
-      </div>
+      </form>
     </div>
   );
 }
