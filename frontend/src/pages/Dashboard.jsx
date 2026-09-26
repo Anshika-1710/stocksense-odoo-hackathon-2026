@@ -22,6 +22,13 @@ const kpis = [
   { icon: <MdSwapHoriz />, label: "Transfers Scheduled", value: "3", color: "#8b5cf6" },
 ];
 
+const activity = [
+  "Receipt #REC-1042 marked as Done — 50 units Steel Rods",
+  "Delivery #DO-2210 shipped — 10 Chairs to Customer A",
+  "Internal transfer completed — Main Warehouse → Production Floor",
+  "Stock adjustment logged — Steel Rods -3 kg (damaged)",
+];
+
 export default function Dashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -33,7 +40,6 @@ export default function Dashboard() {
 
   return (
     <div style={{ fontFamily: "Inter, sans-serif", background: "#f4f6f9", minHeight: "100vh" }}>
-      {/* Top Navbar */}
       <div style={{
         display: "flex", justifyContent: "space-between", alignItems: "center",
         background: "#1e293b", padding: "14px 24px", flexWrap: "wrap"
@@ -60,9 +66,8 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Page content */}
       <div style={{ padding: "28px" }}>
-        <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 20, color: "#1e293b" }}>
+        <h1 style={{ fontSize: 26, fontWeight: 700, marginBottom: 20, color: "#1e293b" }}>
           Inventory Dashboard
         </h1>
 
@@ -74,22 +79,63 @@ export default function Dashboard() {
           {kpis.map((k) => (
             <div key={k.label} style={{
               display: "flex", alignItems: "center", gap: 14,
-              background: "#fff", borderRadius: 12,
-              boxShadow: "0 2px 8px rgba(0,0,0,0.06)", padding: 18
+              background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 12,
+              boxShadow: "0 4px 12px rgba(0,0,0,0.05)", padding: 22
             }}>
               <div style={{
-                width: 46, height: 46, display: "flex", alignItems: "center",
+                width: 48, height: 48, display: "flex", alignItems: "center",
                 justifyContent: "center", borderRadius: 10,
-                background: `${k.color}1A`, color: k.color, fontSize: 22
+                background: `${k.color}1A`, color: k.color, fontSize: 24
               }}>
                 {k.icon}
               </div>
               <div>
-                <div style={{ fontSize: 22, fontWeight: 700, color: "#1e293b" }}>{k.value}</div>
+                <div style={{ fontSize: 26, fontWeight: 700, color: "#1e293b" }}>{k.value}</div>
                 <div style={{ fontSize: 13, color: "#64748b" }}>{k.label}</div>
               </div>
             </div>
           ))}
+        </div>
+
+        <div style={{ marginTop: 32 }}>
+          <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 14, color: "#1e293b" }}>
+            Recent Activity
+          </h2>
+          <div style={{
+            background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 14,
+            boxShadow: "0 4px 12px rgba(0,0,0,0.05)", padding: 20
+          }}>
+            {activity.map((item, i) => (
+              <div key={i} style={{
+                padding: "12px 0",
+                borderBottom: i < activity.length - 1 ? "1px solid #e2e8f0" : "none",
+                fontSize: 14, color: "#334155"
+              }}>
+                {item}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ marginTop: 32 }}>
+          <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 14, color: "#1e293b" }}>
+            Quick Links
+          </h2>
+          <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+            {[
+              { to: "/receipts", label: "New Receipt" },
+              { to: "/deliveries", label: "New Delivery" },
+              { to: "/transfers", label: "New Transfer" },
+              { to: "/adjustments", label: "New Adjustment" },
+            ].map((q) => (
+              <Link key={q.to} to={q.to} style={{
+                background: "#4f46e5", color: "#fff", padding: "10px 18px",
+                borderRadius: 8, fontSize: 14, fontWeight: 500, textDecoration: "none"
+              }}>
+                {q.label}
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </div>
